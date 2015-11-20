@@ -7,11 +7,15 @@
     group: ceph
     mode: 0755
   when:
-    ceph_stable_release != 'dumpling' or
+    cephx and
+    ceph_stable and
+    (ceph_stable_release != 'dumpling' or
     ceph_stable_release != 'emperor' or
     ceph_stable_release != 'firefly' or
     ceph_stable_release != 'giant' or
-    ceph_stable_release != 'hammer'
+    ceph_stable_release != 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '>') }}
 
 - name: create bootstrap-mds directory (before infernalis release)
   file:
@@ -22,11 +26,14 @@
     mode: 0755
   when:
     cephx and
+    ceph_stable and
     (ceph_stable_release == 'dumpling' or
     ceph_stable_release == 'emperor' or
     ceph_stable_release == 'firefly' or
     ceph_stable_release == 'giant' or
-    ceph_stable_release == 'hammer')
+    ceph_stable_release == 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '<=') }}
 
 - name: copy mds bootstrap key (for or after infernalis release)
   copy:
@@ -37,11 +44,14 @@
     mode: 0600
   when:
     cephx and
+    ceph_stable and
     (ceph_stable_release != 'dumpling' or
     ceph_stable_release != 'emperor' or
     ceph_stable_release != 'firefly' or
     ceph_stable_release != 'giant' or
-    ceph_stable_release != 'hammer')
+    ceph_stable_release != 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '>') }}
 
 - name: copy mds bootstrap key (before infernalis release)
   copy:
@@ -52,11 +62,14 @@
     mode: 0600
   when:
     cephx and
+    ceph_stable and
     (ceph_stable_release == 'dumpling' or
     ceph_stable_release == 'emperor' or
     ceph_stable_release == 'firefly' or
     ceph_stable_release == 'giant' or
     ceph_stable_release == 'hammer')
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '<=') }}
 
 - name: create mds directory (for or after infernalis release)
   file:
@@ -66,12 +79,14 @@
     group: ceph
     mode: 0755
   when:
-    cephx and
+    ceph_stable and
     (ceph_stable_release != 'dumpling' or
     ceph_stable_release != 'emperor' or
     ceph_stable_release != 'firefly' or
     ceph_stable_release != 'giant' or
-    ceph_stable_release != 'hammer')
+    ceph_stable_release != 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '>') }}
 
 - name: create mds directory (before infernalis release)
   file:
@@ -81,12 +96,14 @@
     group: cephh
     mode: 0755
   when:
-    cephx and
+    ceph_stable and
     (ceph_stable_release == 'dumpling' or
     ceph_stable_release == 'emperor' or
     ceph_stable_release == 'firefly' or
     ceph_stable_release == 'giant' or
-    ceph_stable_release == 'hammer')
+    ceph_stable_release == 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '<=') }}
 
 - name: create mds keyring
   command: ceph --cluster ceph --name client.bootstrap-mds --keyring /var/lib/ceph/bootstrap-mds/ceph.keyring auth get-or-create mds.{{ ansible_hostname }} osd 'allow rwx' mds 'allow' mon 'allow profile mds' -o /var/lib/ceph/mds/ceph-{{ ansible_hostname }}/keyring
@@ -103,11 +120,14 @@
     group: ceph
   when:
     cephx and
+    ceph_stable and
     (ceph_stable_release != 'dumpling' or
     ceph_stable_release != 'emperor' or
     ceph_stable_release != 'firefly' or
     ceph_stable_release != 'giant' or
-    ceph_stable_release != 'hammer')
+    ceph_stable_release != 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '>') }}
 
 - name: set mds key permissions (before infernalis)
   file:
@@ -117,11 +137,14 @@
     group: root
   when:
     cephx and
+    ceph_stable and
     (ceph_stable_release == 'dumpling' or
     ceph_stable_release == 'emperor' or
     ceph_stable_release == 'firefly' or
     ceph_stable_release == 'giant' or
-    ceph_stable_release == 'hammer')
+    ceph_stable_release == 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '<=') }}
 
 - name: activate metadata server with upstart (for or after infernalis release)
   file:
@@ -140,7 +163,9 @@
     ceph_stable_release != 'emperor' or
     ceph_stable_release != 'firefly' or
     ceph_stable_release != 'giant' or
-    ceph_stable_release != 'hammer')
+    ceph_stable_release != 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '>') }}
 
 - name: activate metadata server with upstart (before infernalis release)
   file:
@@ -159,7 +184,9 @@
     ceph_stable_release == 'emperor' or
     ceph_stable_release == 'firefly' or
     ceph_stable_release == 'giant' or
-    ceph_stable_release == 'hammer')
+    ceph_stable_release == 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '<=') }}
 
 - name: activate metadata server with sysvinit (for or after infernalis release)
   file:
@@ -178,7 +205,9 @@
     ceph_stable_release != 'emperor' or
     ceph_stable_release != 'firefly' or
     ceph_stable_release != 'giant' or
-    ceph_stable_release != 'hammer')
+    ceph_stable_release != 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '>') }}
 
 - name: activate metadata server with sysvinit (before infernalis release)
   file:
@@ -197,7 +226,9 @@
     ceph_stable_release == 'emperor' or
     ceph_stable_release == 'firefly' or
     ceph_stable_release == 'giant' or
-    ceph_stable_release == 'hammer')
+    ceph_stable_release == 'hammer') or
+    ceph_stable_rh_storage and
+    {{ rh_storage_mon_version.stdout | version_compare('0.94', '<=') }}
 
 - name: start and add that the metadata service to the init sequence (ubuntu)
   service:

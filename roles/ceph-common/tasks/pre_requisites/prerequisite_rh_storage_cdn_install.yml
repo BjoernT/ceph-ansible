@@ -56,3 +56,24 @@
   when:
     rgw_group_name in group_names and
     rh_storage_rgw_repo.rc != 0
+
+- name: get ceph-mon version
+  shell: yum --noplugins --cacheonly info ceph-mon | awk '/Version/ { print $3 }' | cut -d '.' -f1,2
+  changed_when: false
+  failed_when: false
+  register: rh_storage_mon_version
+  when: mon_group_name in group_names
+
+- name: get ceph-osd version
+  shell: yum --noplugins --cacheonly info ceph-osd | awk '/Version/ { print $3 }' | cut -d '.' -f1,2
+  changed_when: false
+  failed_when: false
+  register: rh_storage_osd_version
+  when: osd_group_name in group_names
+
+- name: get ceph-rgw version
+  shell: yum --noplugins --cacheonly info ceph-radosgw | awk '/Version/ { print $3 }' | cut -d '.' -f1,2
+  changed_when: false
+  failed_when: false
+  register: rh_storage_rgw_version
+  when: rgw_group_name in group_names
